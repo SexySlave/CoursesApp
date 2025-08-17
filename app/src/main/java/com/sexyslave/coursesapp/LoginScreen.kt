@@ -52,7 +52,7 @@ fun LoginFields(
         Text(
             text = "Email",
             color = Color.White,
-            fontSize = 14.sp,
+            fontSize = 16.sp, // Изменено
             modifier = Modifier.align(Alignment.Start)
         )
         OutlinedTextField(
@@ -82,7 +82,7 @@ fun LoginFields(
         Text(
             text = "Пароль",
             color = Color.White,
-            fontSize = 14.sp,
+            fontSize = 16.sp, // Изменено
             modifier = Modifier.align(Alignment.Start)
         )
         OutlinedTextField(
@@ -138,13 +138,15 @@ fun LoginScreen(
     ) {
         Text(
             text = "Вход",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 28.sp, // Изменено
+            // fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(bottom = 24.dp)
         )
+
+        Spacer(Modifier.height(16.dp))
 
         LoginFields(
             email = email,
@@ -158,7 +160,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(68.dp)
-                .padding(vertical = 12.dp)
+                .padding(top = 8.dp, bottom = 12.dp) // Изменено
                 .align(Alignment.Start),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00C853))
@@ -166,7 +168,7 @@ fun LoginScreen(
             Text(
                 "Вход",
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 18.sp, // Изменено
                 fontWeight = FontWeight.Normal
             )
         }
@@ -236,7 +238,7 @@ fun LoginScreen(
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .weight(1f)
-                    .height(46.dp) // Добавлена высота
+                    .height(46.dp) // Изменено
                     .padding(horizontal = 4.dp)
             ) {
                 Text("ВК", color = Color.White)
@@ -255,7 +257,7 @@ fun LoginScreen(
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .weight(1f)
-                    .height(46.dp) // Добавлена высота
+                    .height(46.dp) // Изменено
                     .padding(horizontal = 4.dp)
             ) {
                 Text("ОК", color = Color.White)
