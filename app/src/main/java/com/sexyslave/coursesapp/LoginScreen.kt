@@ -3,7 +3,7 @@ package com.sexyslave.coursesapp
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+// import androidx.compose.foundation.clickable // Удалено, так как кнопки "Регистрация" и "Забыл пароль" неактивны
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,9 +19,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults // Добавлен новый импорт
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-//import androidx.compose.material3.TextFieldDefaults // Удален старый импорт
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,13 +36,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.util.Log
+import java.util.regex.Pattern
+
+// Функция для валидации email
+fun isEmailValid(email: String): Boolean {
+    // Регулярное выражение для формата "текст@текст.текст" без кириллицы
+    val emailRegex = Pattern.compile(
+        "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$"
+    )
+    return emailRegex.matcher(email).matches()
+}
+
+// Функция для фильтрации кириллицы
+fun filterNonLatin(input: String): String {
+    return input.filter { it.code < 128 } // Оставляем только символы ASCII
+}
 
 @Composable
 fun LoginFields(
     email: String,
     onEmailChange: (String) -> Unit,
     password: String,
-    onPasswordChange: (String) -> Unit
+    onPasswordChange: (String) -> Unit,
+    isEmailValid: Boolean // Добавлен параметр для индикации валидности email
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -52,12 +67,12 @@ fun LoginFields(
         Text(
             text = "Email",
             color = Color.White,
-            fontSize = 16.sp, // Изменено
+            fontSize = 16.sp,
             modifier = Modifier.align(Alignment.Start)
         )
         OutlinedTextField(
             value = email,
-            onValueChange = onEmailChange,
+            onValueChange = { onEmailChange(filterNonLatin(it)) }, // Фильтруем ввод
             placeholder = { Text("example@gmail.com") },
             singleLine = true,
             shape = RoundedCornerShape(50.dp),
@@ -65,24 +80,34 @@ fun LoginFields(
                 .fillMaxWidth()
                 .height(68.dp)
                 .padding(vertical = 6.dp),
-            colors = OutlinedTextFieldDefaults.colors( // Используем OutlinedTextFieldDefaults.colors
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF2C2C2C),
                 unfocusedContainerColor = Color(0xFF2C2C2C),
-                focusedBorderColor = Color.Green,
-                unfocusedBorderColor = Color.Gray,
+                focusedBorderColor = if (email.isNotEmpty() && !isEmailValid) Color.Red else Color.Green, // Динамический цвет бордера
+                unfocusedBorderColor = if (email.isNotEmpty() && !isEmailValid) Color.Red else Color.Gray, // Динамический цвет бордера
                 cursorColor = Color.Green,
                 focusedPlaceholderColor = Color(0xFFAAAAAA),
                 unfocusedPlaceholderColor = Color(0xFFAAAAAA)
-            )
+            ),
+            isError = email.isNotEmpty() && !isEmailValid // Показываем ошибку, если email не пустой и невалидный
         )
+        if (email.isNotEmpty() && !isEmailValid) {
+            Text(
+                text = "Неверный формат email или содержит кириллицу",
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+
 
         // Поле Пароль
         Text(
             text = "Пароль",
             color = Color.White,
-            fontSize = 16.sp, // Изменено
+            fontSize = 16.sp,
             modifier = Modifier.align(Alignment.Start)
         )
         OutlinedTextField(
@@ -95,7 +120,7 @@ fun LoginFields(
                 .fillMaxWidth()
                 .height(68.dp)
                 .padding(vertical = 6.dp),
-            colors = OutlinedTextFieldDefaults.colors( // Используем OutlinedTextFieldDefaults.colors
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF2C2C2C),
@@ -115,13 +140,16 @@ fun LoginFields(
 @Composable
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit,
-    onRegisterClick: () -> Unit,
-    onForgotPasswordClick: () -> Unit,
+    // onRegisterClick: () -> Unit, // Больше не используется напрямую
+    // onForgotPasswordClick: () -> Unit, // Больше не используется напрямую
     onVkClick: (url: String) -> Unit,
     onOkClick: (url: String) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    val emailIsValid = remember(email) { isEmailValid(email) }
+    val isLoginButtonEnabled = emailIsValid && password.isNotEmpty()
 
     val vkUrl = "https://vk.com"
     val okUrl = "https://ok.ru"
@@ -138,8 +166,7 @@ fun LoginScreen(
     ) {
         Text(
             text = "Вход",
-            fontSize = 28.sp, // Изменено
-            // fontWeight = FontWeight.Bold,
+            fontSize = 28.sp,
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.Start)
@@ -152,23 +179,30 @@ fun LoginScreen(
             email = email,
             onEmailChange = { email = it },
             password = password,
-            onPasswordChange = { password = it }
+            onPasswordChange = { password = it },
+            isEmailValid = emailIsValid
         )
 
+        Spacer(Modifier.height(10.dp))
+
         Button(
-            onClick = { onLoginClick(email, password) },
+            onClick = { if (isLoginButtonEnabled) onLoginClick(email, password) },
+            enabled = isLoginButtonEnabled, // Управляем активностью кнопки
             modifier = Modifier
                 .fillMaxWidth()
                 .height(68.dp)
-                .padding(top = 8.dp, bottom = 12.dp) // Изменено
+                .padding(top = 8.dp, bottom = 12.dp)
                 .align(Alignment.Start),
             shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00C853))
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF00C853),
+                disabledContainerColor = Color.Gray // Цвет неактивной кнопки
+            )
         ) {
             Text(
                 "Вход",
                 color = Color.White,
-                fontSize = 18.sp, // Изменено
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Normal
             )
         }
@@ -182,17 +216,17 @@ fun LoginScreen(
             Spacer(Modifier.width(4.dp))
             Text(
                 text = "Регистрация",
-                color = Color(0xFF00C853),
-                modifier = Modifier.clickable { onRegisterClick() }
+                color = Color.Gray, // Цвет изменен на Gray для неактивности
+                // modifier = Modifier.clickable { onRegisterClick() } // Удален clickable
             )
         }
 
         Text(
             text = "Забыл пароль",
-            color = Color(0xFF00C853),
+            color = Color.Gray, // Цвет изменен на Gray для неактивности
             modifier = Modifier
                 .padding(top = 8.dp)
-                .clickable { onForgotPasswordClick() }
+                // .clickable { onForgotPasswordClick() } // Удален clickable
         )
 
         Spacer(Modifier.height(32.dp))
@@ -238,7 +272,7 @@ fun LoginScreen(
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .weight(1f)
-                    .height(46.dp) // Изменено
+                    .height(46.dp)
                     .padding(horizontal = 4.dp)
             ) {
                 Text("ВК", color = Color.White)
@@ -257,7 +291,7 @@ fun LoginScreen(
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .weight(1f)
-                    .height(46.dp) // Изменено
+                    .height(46.dp)
                     .padding(horizontal = 4.dp)
             ) {
                 Text("ОК", color = Color.White)
@@ -271,8 +305,6 @@ fun LoginScreen(
 fun DefaultPreview() {
     LoginScreen(
         onLoginClick = { _, _ -> },
-        onRegisterClick = {},
-        onForgotPasswordClick = {},
         onVkClick = {},
         onOkClick = {}
     )

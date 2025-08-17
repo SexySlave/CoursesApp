@@ -26,8 +26,7 @@ class MainActivity : ComponentActivity() {
 
                         onVkClick = { },
                         onOkClick = { },
-                        onRegisterClick = {},
-                        onForgotPasswordClick = {}
+
                     )
 
 //                    Greeting(
