@@ -2,6 +2,7 @@ package com.sexyslave.coursesapp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable // Для Modifier.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,14 +16,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite // Старая иконка для сортировки, можно будет заменить
+import androidx.compose.material.icons.automirrored.filled.List
+
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.FavoriteBorder // Для "Избранное"
+
+import androidx.compose.material.icons.outlined.FavoriteBorder // Для "Избранное" в карточке
 import androidx.compose.material.icons.outlined.Home // Для "Главная"
 import androidx.compose.material.icons.outlined.Person // Для "Аккаунт"
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -33,7 +40,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-// import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,9 +50,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+// import androidx.compose.ui.graphics.vector.ImageVector // Не используется напрямую ImageVector для painterResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.PlatformTextStyle // Добавлен импорт
+import androidx.compose.ui.text.TextStyle // Добавлен импорт
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,41 +77,89 @@ fun CoursesScreen() {
             .fillMaxSize()
             .background(Color(0xFF1E1E1E))
     ) {
-        // 🔎 SearchBar + Sort
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // 🔎 SearchBar + Filter
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(start = 12.dp, top = 36.dp, end = 12.dp, bottom = 12.dp), // Увеличен верхний отступ
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Search courses...", color = Color.Gray) },
+                value = "", // Состояние для текста поиска нужно будет добавить
+                onValueChange = { /* TODO: обновить состояние текста поиска */ },
+                placeholder = { Text("Search courses...", style = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false))) }, // Размер шрифта увеличен и убраны отступы
                 leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray)
+                    Icon(painter =  painterResource(R.drawable.search_24dp_ffffff), contentDescription = "Search Icon", modifier = Modifier.size(24.dp),  tint = Color.White)
                 },
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-//                colors = TextFieldDefaults.textFieldColors(
-//                    containerColor = Color.DarkGray,
-//                    focusedIndicatorColor = Color.Transparent,
-//                    unfocusedIndicatorColor = Color.Transparent,
-//                )
+                shape = RoundedCornerShape(24.dp), // Округлая форма
+                textStyle = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false)), // Добавлено для основного текста и плейсхолдера, убраны отступы
+                colors = TextFieldDefaults.colors( // Обновленные цвета
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedContainerColor = Color(0xFF2C2C2C), // Цвет фона как у навигации
+                    unfocusedContainerColor = Color(0xFF2C2C2C),
+                    disabledContainerColor = Color(0xFF2C2C2C),
+                    focusedIndicatorColor = Color.Transparent, // Без подчеркивания
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedLeadingIconColor = Color(0xFF9E9E9E),
+                    unfocusedLeadingIconColor = Color(0xFF9E9E9E),
+                    focusedPlaceholderColor = Color(0xFF9E9E9E),
+                    unfocusedPlaceholderColor = Color(0xFF9E9E9E)
+                )
             )
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = { /* TODO: сортировка */ }) {
-                Icon(Icons.Filled.Favorite, contentDescription = "Sort", tint = Color.White) // Иконка для сортировки?
+            Box( // Обертка для круглой кнопки фильтра
+                modifier = Modifier
+                    .size(48.dp) // Размер соответствует высоте TextField
+                    .background(color = Color(0xFF2C2C2C), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(onClick = { /* TODO: логика фильтрации */ }) {
+                    Icon(
+                        painter =  painterResource(R.drawable.filter_alt_24dp_ffffff), // Иконка фильтра обновлена
+                        contentDescription = "Filter courses",
+                        tint = Color.White // Белая иконка,
+                        , modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
 
-        Text(
-            text = "По дате добавления",
-            color = Color.Green,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-        )
+        Row( // Родительская Row для выравнивания
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp), // Отступы от краев экрана и снизу
+            horizontalArrangement = Arrangement.End // Выравниваем кнопку по правому краю
+        ) {
+            Row( // Сама кнопка сортировки
+                modifier = Modifier
+                    .background(color = Color(0x002C2C2C), shape = RoundedCornerShape(8.dp))
+                    .clickable { /* TODO: Добавить логику смены сортировки или открытия меню сортировки */ }
+                    .padding(horizontal = 12.dp, vertical = 6.dp), // Внутренние отступы для текста и иконки
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "По дате добавления",
+                    color = Color.Green, // Можно будет поменять на Color.White для лучшего контраста, если нужно
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    painter = painterResource(R.drawable.swap_vert_24dp_ffffff),
+                    contentDescription = "Изменить сортировку",
+                    tint = Color.Green, // Аналогично тексту
+                    modifier = Modifier.size(18.dp)
+
+                )
+            }
+        }
 
         // 📚 Список курсов
         LazyColumn(
@@ -196,11 +253,11 @@ fun CourseCard(course: Course) {
                         .padding(2.dp) // Уменьшенный внутренний отступ для иконки
                 ) {
                     IconButton(
-                        onClick = { },
+                        onClick = { /* TODO: Handle favorite click */ },
                         modifier = Modifier.size(20.dp) // Явно уменьшим размер IconButton
                     ) {
                         Icon(
-                            painter = painterResource( R.drawable.bookmark_24dp_ffffff),
+                            painter = painterResource( R.drawable.bookmark_24dp_ffffff), // Используем drawable для карточки
                             contentDescription = "Add to favorites",
                             tint = Color.White,
                             modifier = Modifier.fillMaxSize() // Иконка заполняет IconButton
@@ -228,7 +285,7 @@ fun CourseCard(course: Course) {
                         Icon(
                             Icons.Default.Star,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = Color.Green,
                             modifier = Modifier.size(14.dp) // Немного уменьшим звезду
                         )
                         Text(
@@ -286,13 +343,13 @@ fun CourseCard(course: Course) {
                 Text(
                     "Подробнее ➜",
                     color = Color(0xFF388E3C),
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    modifier = androidx . compose . ui . Modifier.clickable { /* TODO: Handle details click */ }
                 )
             }
         }
     }
 }
-
 
 
 data class Course(
@@ -311,7 +368,7 @@ val sampleCourses = listOf(
         "999",
         4.9,
         "22 Мая 2024",
-        android.R.drawable.ic_menu_gallery
+        android.R.drawable.ic_menu_gallery // Placeholder, замените на ваши ресурсы
     ),
     Course(
         "3D-дженералист",
@@ -319,6 +376,6 @@ val sampleCourses = listOf(
         "12000",
         3.9,
         "10 Сентября 2024",
-        android.R.drawable.ic_menu_gallery
+        android.R.drawable.ic_menu_gallery // Placeholder, замените на ваши ресурсы
     )
 )
