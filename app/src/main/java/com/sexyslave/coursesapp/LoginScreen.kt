@@ -36,6 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.util.Log
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import java.util.regex.Pattern
 
 // Функция для валидации email
@@ -136,165 +139,162 @@ fun LoginFields(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LoginScreen(
-    onLoginClick: (String, String) -> Unit,
-    // onRegisterClick: () -> Unit, // Больше не используется напрямую
-    // onForgotPasswordClick: () -> Unit, // Больше не используется напрямую
-    onVkClick: (url: String) -> Unit,
-    onOkClick: (url: String) -> Unit
-) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+object LoginScreen : Screen {
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun Content() {
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
 
-    val emailIsValid = remember(email) { isEmailValid(email) }
-    val isLoginButtonEnabled = emailIsValid && password.isNotEmpty()
+        val emailIsValid = remember(email) { isEmailValid(email) }
+        val isLoginButtonEnabled = emailIsValid && password.isNotEmpty()
 
-    val vkUrl = "https://vk.com"
-    val okUrl = "https://ok.ru"
+        val vkUrl = "https://vk.com"
+        val okUrl = "https://ok.ru"
 
-    val context = LocalContext.current
+        val context = LocalContext.current
+        val navigator = LocalNavigator.currentOrThrow
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1E1E1E))
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Вход",
-            fontSize = 28.sp,
-            color = Color.White,
+        Column(
             modifier = Modifier
-                .align(Alignment.Start)
-                .padding(bottom = 24.dp)
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        LoginFields(
-            email = email,
-            onEmailChange = { email = it },
-            password = password,
-            onPasswordChange = { password = it },
-            isEmailValid = emailIsValid
-        )
-
-        Spacer(Modifier.height(10.dp))
-
-        Button(
-            onClick = { if (isLoginButtonEnabled) onLoginClick(email, password) },
-            enabled = isLoginButtonEnabled, // Управляем активностью кнопки
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(68.dp)
-                .padding(top = 8.dp, bottom = 12.dp)
-                .align(Alignment.Start),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF00C853),
-                disabledContainerColor = Color.Gray // Цвет неактивной кнопки
-            )
+                .fillMaxSize()
+                .background(Color(0xFF1E1E1E))
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "Вход",
+                text = "Вход",
+                fontSize = 28.sp,
                 color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Normal
-            )
-        }
-
-        Row(
-            modifier = Modifier.padding(top = 8.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Нет аккаунта?", color = Color.Gray)
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = "Регистрация",
-                color = Color.Gray, // Цвет изменен на Gray для неактивности
-                // modifier = Modifier.clickable { onRegisterClick() } // Удален clickable
-            )
-        }
-
-        Text(
-            text = "Забыл пароль",
-            color = Color.Gray, // Цвет изменен на Gray для неактивности
-            modifier = Modifier
-                .padding(top = 8.dp)
-                // .clickable { onForgotPasswordClick() } // Удален clickable
-        )
-
-        Spacer(Modifier.height(32.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
-        ) {
-            Divider(
-                color = Color.DarkGray,
-                thickness = 1.dp,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = "или",
-                color = Color.Gray,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Divider(
-                color = Color.DarkGray,
-                thickness = 1.dp,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(
-                onClick = {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(vkUrl))
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Log.e("LoginScreen", "Не удалось открыть ВК: $vkUrl", e)
-                    }
-                    onVkClick(vkUrl)
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2787F5)),
-                shape = RoundedCornerShape(50),
                 modifier = Modifier
-                    .weight(1f)
-                    .height(46.dp)
-                    .padding(horizontal = 4.dp)
+                    .align(Alignment.Start)
+                    .padding(bottom = 24.dp)
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            LoginFields(
+                email = email,
+                onEmailChange = { email = it },
+                password = password,
+                onPasswordChange = { password = it },
+                isEmailValid = emailIsValid
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            Button(
+                onClick = { if (isLoginButtonEnabled) navigator.push(HomeScreen) },
+                enabled = isLoginButtonEnabled, // Управляем активностью кнопки
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(68.dp)
+                    .padding(top = 8.dp, bottom = 12.dp)
+                    .align(Alignment.Start),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF00C853),
+                    disabledContainerColor = Color.Gray // Цвет неактивной кнопки
+                )
             ) {
-                Text("ВК", color = Color.White)
+                Text(
+                    "Вход",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Normal
+                )
             }
-            Button(
-                onClick = {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(okUrl))
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Log.e("LoginScreen", "Не удалось открыть ОК: $okUrl", e)
-                    }
-                    onOkClick(okUrl)
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700)),
-                shape = RoundedCornerShape(50),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(46.dp)
-                    .padding(horizontal = 4.dp)
+
+            Row(
+                modifier = Modifier.padding(top = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("ОК", color = Color.White)
+                Text(text = "Нет аккаунта?", color = Color.Gray)
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = "Регистрация",
+                    color = Color.Gray, // Цвет изменен на Gray для неактивности
+                    // modifier = Modifier.clickable { onRegisterClick() } // Удален clickable
+                )
+            }
+
+            Text(
+                text = "Забыл пароль",
+                color = Color.Gray, // Цвет изменен на Gray для неактивности
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    // .clickable { onForgotPasswordClick() } // Удален clickable
+            )
+
+            Spacer(Modifier.height(32.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+            ) {
+                Divider(
+                    color = Color.DarkGray,
+                    thickness = 1.dp,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "или",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                Divider(
+                    color = Color.DarkGray,
+                    thickness = 1.dp,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(vkUrl))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Log.e("LoginScreen", "Не удалось открыть ВК: $vkUrl", e)
+                        }
+                        // onVkClick(vkUrl) // No longer passing this up, handled locally or removed
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2787F5)),
+                    shape = RoundedCornerShape(50),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Text("ВК", color = Color.White)
+                }
+                Button(
+                    onClick = {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(okUrl))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Log.e("LoginScreen", "Не удалось открыть ОК: $okUrl", e)
+                        }
+                        // onOkClick(okUrl) // No longer passing this up, handled locally or removed
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700)),
+                    shape = RoundedCornerShape(50),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Text("ОК", color = Color.White)
+                }
             }
         }
     }
@@ -303,9 +303,5 @@ fun LoginScreen(
 @Preview(showBackground = true, backgroundColor = 0xFF1E1E1E)
 @Composable
 fun DefaultPreview() {
-    LoginScreen(
-        onLoginClick = { _, _ -> },
-        onVkClick = {},
-        onOkClick = {}
-    )
+    LoginScreen.Content() // Preview now calls the Content method of the LoginScreen object
 }

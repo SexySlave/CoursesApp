@@ -49,9 +49,10 @@ dependencies {
     // DI
     implementation("io.insert-koin:koin-android:3.4.0")
 
-    // Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.0")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.0")
+    // Voyager Navigation
+    implementation("cafe.adriel.voyager:voyager-navigator:1.1.0-beta03")
+    implementation("cafe.adriel.voyager:voyager-transitions:1.1.0-beta03")
+    implementation("cafe.adriel.voyager:voyager-koin:1.1.0-beta03")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
