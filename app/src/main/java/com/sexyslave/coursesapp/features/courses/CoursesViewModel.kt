@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collect // Добавлен импорт для c
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlinx.coroutines.CancellationException // Добавлен импорт для CancellationException
 
 class CoursesViewModel(
     private val getCoursesUseCase: GetCoursesUseCase,
@@ -33,6 +34,9 @@ class CoursesViewModel(
                     _coursesState.value = CoursesUiState.Success(courseList) // Убрано as List<Course>
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) {
+                    throw e
+                }
                 _coursesState.value = CoursesUiState.Error(e.message ?: "Unknown error")
             }
         }
@@ -82,6 +86,9 @@ class CoursesViewModel(
                     _coursesState.value = CoursesUiState.Success(sortedCourses)
                 } catch (e: Exception) {
                      // Если проблема с SimpleDateFormat или общая при сортировке
+                    if (e is CancellationException) { // Добавлена проверка и здесь на всякий случай
+                        throw e
+                    }
                     _coursesState.value = CoursesUiState.Error("Error sorting dates: ${e.message}")
                     // Или просто оставляем текущий список
                     // _coursesState.value = CoursesUiState.Success(currentCourses)

@@ -111,8 +111,13 @@ fun FavoritesScreenContent(viewModel: CoursesViewModel = koinViewModel()) { // R
                         navigator.popUntil { it is HomeScreen }
                     } else {
                         navigator.push(HomeScreen)
-                    }
-                          },
+                    } },
+
+//                onClick = {
+//                    selectedItemIndex = 0
+//                    navigator.push(HomeScreen)
+//                },
+
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "Главная") },
                 label = { Text("Главная") },
                 colors = NavigationBarItemDefaults.colors(
