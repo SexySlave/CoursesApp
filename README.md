@@ -95,24 +95,20 @@ CoursesApp - это Android приложение для просмотра сп�
 ## Скриншоты 📸
 
 
-<div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-  <div style="width: 200px; text-align: center;">
-    <div><b>Экран входа</b></div>
-    <img src="screenshots/Screenshot_20250820_001618.png" width="180">
-  </div>
-  <div style="width: 200px; text-align: center;">
-    <div><b>Экран входа</b></div>
-    <img src="screenshots/Screenshot_20250820_001739.png" width="180">
-  </div>
-  <div style="width: 200px; text-align: center;">
-    <div><b>Главный экран</b></div>
-    <img src="screenshots/Screenshot_20250820_001509.png" width="180">
-  </div>
-  <div style="width: 200px; text-align: center;">
-    <div><b>Избранное</b></div>
-    <img src="screenshots/Screenshot_20250820_001559.png" width="180">
-  </div>
-</div>
+<table>
+  <tr>
+    <td width="25%" align="center"><b>Экран входа</b></td>
+    <td width="25%" align="center"><b>Экран входа</b></td>
+    <td width="25%" align="center"><b>Главный экран</b></td>
+    <td width="25%" align="center"><b>Избранное</b></td>
+  </tr>
+  <tr>
+    <td width="25%" align="center"><img src="screenshots/Screenshot_20250820_001618.png" width="180"></td>
+    <td width="25%" align="center"><img src="screenshots/Screenshot_20250820_001739.png" width="180"></td>
+    <td width="25%" align="center"><img src="screenshots/Screenshot_20250820_001509.png" width="180"></td>
+    <td width="25%" align="center"><img src="screenshots/Screenshot_20250820_001559.png" width="180"></td>
+  </tr>
+</table>
 
 ---
 
