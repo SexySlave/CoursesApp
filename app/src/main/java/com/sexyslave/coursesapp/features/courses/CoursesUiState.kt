@@ -1,6 +1,6 @@
 package com.sexyslave.coursesapp.features.courses
 
-import com.sexyslave.domain.model.Course // Убедитесь, что импорт правильный
+import com.sexyslave.domain.model.Course
 
 sealed interface CoursesUiState {
     object Loading : CoursesUiState

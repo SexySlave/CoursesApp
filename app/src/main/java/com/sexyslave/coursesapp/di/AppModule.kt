@@ -1,15 +1,14 @@
 package com.sexyslave.coursesapp.di
 
-
 import androidx.room.Room
 import com.sexyslave.coursesapp.features.courses.CoursesViewModel
-import com.sexyslave.data.database.AppDatabase // Предполагаемый импорт
-import com.sexyslave.data.database.dao.CourseDao // Предполагаемый импорт
+import com.sexyslave.data.database.AppDatabase
+import com.sexyslave.data.database.dao.CourseDao
 import com.sexyslave.data.network.ApiService
 import com.sexyslave.data.repository.CourseRepositoryImpl
 import com.sexyslave.domain.repository.CourseRepository
 import com.sexyslave.domain.usecase.GetCoursesUseCase
-import com.sexyslave.domain.usecase.UpdateFavoriteStatusUseCase // Добавленный импорт
+import com.sexyslave.domain.usecase.UpdateFavoriteStatusUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
     // ViewModel
-    viewModel { CoursesViewModel(get(), get()) } // Добавили GetCoursesUseCase и UpdateFavoriteStatusUseCase
+    viewModel { CoursesViewModel(get(), get()) }
 }
 
 val domainModule = module {
@@ -32,13 +31,13 @@ val domainModule = module {
 
 val dataModule = module {
     // CoroutineScope for Repository background tasks
-    single { CoroutineScope(SupervisorJob() + Dispatchers.IO) } // Предоставляем CoroutineScope
+    single { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
     // Database
     single {
         Room.databaseBuilder(
             androidApplication(),
-            AppDatabase::class.java, "courses_database" // Имя БД, если другое - поправьте
+            AppDatabase::class.java, "courses_database"
         ).build()
     }
     single<CourseDao> { get<AppDatabase>().courseDao() }
@@ -48,14 +47,14 @@ val dataModule = module {
         CourseRepositoryImpl(
             apiService = get(),
             courseDao = get(),
-            externalScope = get() // Внедряем CoroutineScope
+            externalScope = get()
         )
     }
 
     // Network
     single<ApiService> {
         Retrofit.Builder()
-            .baseUrl("https://drive.usercontent.google.com/") // Base URL from your link
+            .baseUrl("https://drive.usercontent.google.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)

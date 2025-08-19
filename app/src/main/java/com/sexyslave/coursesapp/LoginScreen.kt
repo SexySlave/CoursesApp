@@ -42,7 +42,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import java.util.regex.Pattern
 
-// Функция для валидации email
+
 fun isEmailValid(email: String): Boolean {
     // Регулярное выражение для формата "текст@текст.текст" без кириллицы
     val emailRegex = Pattern.compile(
@@ -62,7 +62,7 @@ fun LoginFields(
     onEmailChange: (String) -> Unit,
     password: String,
     onPasswordChange: (String) -> Unit,
-    isEmailValid: Boolean // Добавлен параметр для индикации валидности email
+    isEmailValid: Boolean
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -76,7 +76,7 @@ fun LoginFields(
         )
         OutlinedTextField(
             value = email,
-            onValueChange = { onEmailChange(filterNonLatin(it)) }, // Фильтруем ввод
+            onValueChange = { onEmailChange(filterNonLatin(it)) },
             placeholder = { Text("example@gmail.com") },
             singleLine = true,
             shape = RoundedCornerShape(50.dp),
@@ -84,20 +84,20 @@ fun LoginFields(
                 .fillMaxWidth()
                 .height(68.dp)
                 .padding(vertical = 6.dp),
-            textStyle = TextStyle(color = Color.White), // Явно задаем цвет текста
+            textStyle = TextStyle(color = Color.White),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF2C2C2C),
                 unfocusedContainerColor = Color(0xFF2C2C2C),
-                focusedBorderColor = Color.Transparent, // Убрана обводка
-                unfocusedBorderColor = Color.Transparent, // Убрана обводка
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
                 cursorColor = Color(0xFF12B956),
                 focusedPlaceholderColor = Color(0xFFAAAAAA),
                 unfocusedPlaceholderColor = Color(0xFFAAAAAA),
-                errorBorderColor = Color.Red // Цвет обводки при ошибке
+                errorBorderColor = Color.Red
             ),
-            isError = email.isNotEmpty() && !isEmailValid // Показываем ошибку, если email не пустой и невалидный
+            isError = email.isNotEmpty() && !isEmailValid
         )
         if (email.isNotEmpty() && !isEmailValid) {
             Text(
@@ -126,14 +126,14 @@ fun LoginFields(
                 .fillMaxWidth()
                 .height(68.dp)
                 .padding(vertical = 6.dp),
-            textStyle = TextStyle(color = Color.White), // Явно задаем цвет текста
+            textStyle = TextStyle(color = Color.White),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF2C2C2C),
                 unfocusedContainerColor = Color(0xFF2C2C2C),
-                focusedBorderColor = Color.Transparent, // Убрана обводка
-                unfocusedBorderColor = Color.Transparent, // Убрана обводка
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
                 cursorColor = Color(0xFF12B956),
                 focusedPlaceholderColor = Color(0xFFAAAAAA),
                 unfocusedPlaceholderColor = Color(0xFFAAAAAA)
@@ -190,7 +190,7 @@ object LoginScreen : Screen {
 
             Button(
                 onClick = { if (isLoginButtonEnabled) navigator.push(HomeScreen) },
-                enabled = isLoginButtonEnabled, // Управляем активностью кнопки
+                enabled = isLoginButtonEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(68.dp)
@@ -198,8 +198,8 @@ object LoginScreen : Screen {
                     .align(Alignment.Start),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF12B956), // Обновленный зеленый цвет для кнопки входа
-                    disabledContainerColor = Color.Gray // Цвет неактивной кнопки
+                    containerColor = Color(0xFF12B956),
+                    disabledContainerColor = Color.Gray
                 )
             ) {
                 Text(
@@ -219,17 +219,17 @@ object LoginScreen : Screen {
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = "Регистрация",
-                    color = Color(0xFF12B956), // Сделал текст зеленым
-                    // modifier = Modifier.clickable { onRegisterClick() } // Удален clickable
+                    color = Color(0xFF12B956),
+                    // modifier = Modifier.clickable { onRegisterClick() }
                 )
             }
 
             Text(
                 text = "Забыл пароль",
-                color = Color(0xFF12B956), // Сделал текст зеленым
+                color = Color(0xFF12B956),
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    // .clickable { onForgotPasswordClick() } // Удален clickable
+                    // .clickable { onForgotPasswordClick() }
             )
 
             Spacer(Modifier.height(32.dp))
@@ -269,7 +269,7 @@ object LoginScreen : Screen {
                         } catch (e: Exception) {
                             Log.e("LoginScreen", "Не удалось открыть ВК: $vkUrl", e)
                         }
-                        // onVkClick(vkUrl) // No longer passing this up, handled locally or removed
+                        // onVkClick(vkUrl)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2787F5)),
                     shape = RoundedCornerShape(50),
@@ -288,7 +288,7 @@ object LoginScreen : Screen {
                         } catch (e: Exception) {
                             Log.e("LoginScreen", "Не удалось открыть ОК: $okUrl", e)
                         }
-                        // onOkClick(okUrl) // No longer passing this up, handled locally or removed
+                        // onOkClick(okUrl)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF7700)),
                     shape = RoundedCornerShape(50),
@@ -307,5 +307,5 @@ object LoginScreen : Screen {
 @Preview(showBackground = true, backgroundColor = 0xFF1E1E1E)
 @Composable
 fun DefaultPreview() {
-    LoginScreen.Content() // Preview now calls the Content method of the LoginScreen object
+    LoginScreen.Content()
 }

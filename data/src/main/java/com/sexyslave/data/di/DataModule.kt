@@ -6,8 +6,8 @@ import com.sexyslave.data.database.dao.CourseDao
 import com.sexyslave.data.network.ApiService
 import com.sexyslave.data.repository.CourseRepositoryImpl
 import com.sexyslave.domain.repository.CourseRepository
-import com.sexyslave.domain.usecase.GetCoursesUseCase // Добавил импорт
-import com.sexyslave.domain.usecase.UpdateFavoriteStatusUseCase // Добавил импорт
+import com.sexyslave.domain.usecase.GetCoursesUseCase
+import com.sexyslave.domain.usecase.UpdateFavoriteStatusUseCase
 import org.koin.dsl.module
 import org.koin.android.ext.koin.androidContext
 import retrofit2.Retrofit
@@ -30,7 +30,7 @@ val databaseModule = module {
 val networkModule = module {
     single<ApiService> {
         Retrofit.Builder()
-            .baseUrl("https://drive.usercontent.google.com/") // TODO: Move to a constants file
+            .baseUrl("https://drive.usercontent.google.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
@@ -39,16 +39,16 @@ val networkModule = module {
 
 val repositoryModule = module {
     single<CourseRepository> {
-        CourseRepositoryImpl(get(), get(), get()) // Koin сам подставит ApiService и CourseDao
+        CourseRepositoryImpl(get(), get(), get())
     }
 }
 
 val useCaseModule = module {
-    factory { GetCoursesUseCase(get()) } // Предполагаем, что GetCoursesUseCase тоже нужен
+    factory { GetCoursesUseCase(get()) }
     factory { UpdateFavoriteStatusUseCase(get()) }
 }
 
-// Объединяем модули для удобства
+
 val dataModule = module {
     includes(databaseModule, networkModule, repositoryModule, useCaseModule)
 }

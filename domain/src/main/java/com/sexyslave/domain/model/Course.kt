@@ -9,5 +9,5 @@ data class Course(
     val startDate: String,
     val hasLike: Boolean,
     val publishDate: String,
-    val imageRes: Int // This was in your original HomeScreen, decide if you need it from API or map locally
+    val imageRes: Int
 )

@@ -66,7 +66,6 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
                 value = searchQuery,
                 onValueChange = {
                     searchQuery = it
-                    // viewModel.searchCourses(it) // Раскомментируйте, если/когда реализуете поиск в ViewModel
                 },
                 placeholder = { Text("Search courses...", style = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false))) },
                 leadingIcon = {
@@ -100,7 +99,7 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
                     .background(color = Color(0xFF2C2C2C), shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = { /* TODO: логика фильтрации */ }) {
+                IconButton(onClick = {  }) {
                     Icon(
                         painter = painterResource(R.drawable.filter_alt_24dp_ffffff),
                         contentDescription = "Filter courses",
@@ -227,7 +226,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
-            .clickable { /* TODO: Handle course click / navigation */ },
+            .clickable {  },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C))
     ) {
@@ -239,7 +238,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.card1), // Используем course.imageRes или другой плейсхолдер
+                    painter = painterResource(id = R.drawable.card1), 
                     contentDescription = course.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
@@ -331,7 +330,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                                 if (day.isNotEmpty() && monthName.isNotEmpty() && year.isNotEmpty()) {
                                     "$day $monthName $year"
                                 } else {
-                                    course.publishDate // Fallback to original if parsing fails
+                                    course.publishDate 
                                 }
                             },
                             color = Color.White,
@@ -368,7 +367,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                     "Подробнее ➜",
                     color = Color(0xFF12B956),
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.clickable { /* TODO: Handle details click */ }
+                    modifier = Modifier.clickable {  }
                 )
             }
         }

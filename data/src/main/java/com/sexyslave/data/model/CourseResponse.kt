@@ -10,7 +10,7 @@ data class CourseDto(
     val text: String,
     val price: String,
     val rate: Double,
-    val startDate: String, // Consider converting to a Date type later
+    val startDate: String,
     val hasLike: Boolean,
-    val publishDate: String // Consider converting to a Date type later
+    val publishDate: String
 )
