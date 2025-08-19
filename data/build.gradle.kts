@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "2.2.0-2.0.2"
+
 }
 
 android {
@@ -42,14 +43,21 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":core"))
 
+    // DI
+    implementation("io.insert-koin:koin-core:4.1.0")
+    implementation("io.insert-koin:koin-android:4.1.0")
+    implementation("io.insert-koin:koin-androidx-compose:4.1.0")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
-    // Room (опционально)
-    implementation("androidx.room:room-ktx:2.5.2")
-    kapt("androidx.room:room-compiler:2.5.2")
+    // Room (Android)
+    implementation("androidx.room:room-runtime:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
+    implementation("androidx.room:room-paging:2.7.2")
+    ksp("androidx.room:room-compiler:2.7.2")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

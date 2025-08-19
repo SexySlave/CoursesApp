@@ -47,12 +47,23 @@ dependencies {
     implementation(project(":features:login"))
 
     // DI
-    implementation("io.insert-koin:koin-android:3.4.0")
+    implementation("io.insert-koin:koin-core:4.1.0")
+    implementation("io.insert-koin:koin-android:4.1.0")
+    implementation("io.insert-koin:koin-androidx-compose:4.1.0")
 
     // Voyager Navigation
     implementation("cafe.adriel.voyager:voyager-navigator:1.1.0-beta03")
     implementation("cafe.adriel.voyager:voyager-transitions:1.1.0-beta03")
     implementation("cafe.adriel.voyager:voyager-koin:1.1.0-beta03")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
+    // Room (Android)
+    implementation("androidx.room:room-runtime:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
+    implementation("androidx.room:room-paging:2.7.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

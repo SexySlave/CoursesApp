@@ -2,75 +2,53 @@ package com.sexyslave.coursesapp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable // Для Modifier.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-
-import androidx.compose.material.icons.outlined.FavoriteBorder // Для "Избранное" в карточке
-import androidx.compose.material.icons.outlined.Home // Для "Главная"
-import androidx.compose.material.icons.outlined.Person // Для "Аккаунт"
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-// import androidx.compose.ui.graphics.vector.ImageVector // Не используется напрямую ImageVector для painterResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.PlatformTextStyle // Добавлен импорт
-import androidx.compose.ui.text.TextStyle // Добавлен импорт
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
+import com.sexyslave.coursesapp.features.courses.CoursesUiState
+import com.sexyslave.coursesapp.features.courses.CoursesViewModel
+import com.sexyslave.domain.model.Course // Correct import for your domain model
+import org.koin.androidx.compose.koinViewModel
 
 object HomeScreen : Screen {
     @Composable
     override fun Content() {
+        // ViewModel будет получен внутри CoursesScreen
         CoursesScreen()
     }
 }
 
 @Composable
-fun CoursesScreen() {
+fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
     var selectedItemIndex by remember { mutableStateOf(0) }
+    var searchQuery by remember { mutableStateOf("") }
+    val coursesState by viewModel.coursesState.collectAsState()
+    val navigator = LocalNavigator.currentOrThrow // Получаем навигатор
 
     Column(
         modifier = Modifier
@@ -83,29 +61,32 @@ fun CoursesScreen() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, top = 36.dp, end = 12.dp, bottom = 12.dp), // Увеличен верхний отступ
+                .padding(start = 12.dp, top = 36.dp, end = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
-                value = "", // Состояние для текста поиска нужно будет добавить
-                onValueChange = { /* TODO: обновить состояние текста поиска */ },
-                placeholder = { Text("Search courses...", style = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false))) }, // Размер шрифта увеличен и убраны отступы
+                value = searchQuery,
+                onValueChange = {
+                    searchQuery = it
+                    // viewModel.searchCourses(it) // Раскомментируйте, если/когда реализуете поиск в ViewModel
+                },
+                placeholder = { Text("Search courses...", style = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false))) },
                 leadingIcon = {
-                    Icon(painter =  painterResource(R.drawable.search_24dp_ffffff), contentDescription = "Search Icon", modifier = Modifier.size(24.dp),  tint = Color.White)
+                    Icon(painter = painterResource(R.drawable.search_24dp_ffffff), contentDescription = "Search Icon", modifier = Modifier.size(24.dp), tint = Color.White)
                 },
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                shape = RoundedCornerShape(24.dp), // Округлая форма
-                textStyle = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false)), // Добавлено для основного текста и плейсхолдера, убраны отступы
-                colors = TextFieldDefaults.colors( // Обновленные цвета
+                shape = RoundedCornerShape(24.dp),
+                textStyle = TextStyle(fontSize = 16.sp, platformStyle = PlatformTextStyle(includeFontPadding = false)),
+                colors = TextFieldDefaults.colors(
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
                     cursorColor = Color.White,
-                    focusedContainerColor = Color(0xFF2C2C2C), // Цвет фона как у навигации
+                    focusedContainerColor = Color(0xFF2C2C2C),
                     unfocusedContainerColor = Color(0xFF2C2C2C),
                     disabledContainerColor = Color(0xFF2C2C2C),
-                    focusedIndicatorColor = Color.Transparent, // Без подчеркивания
+                    focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     focusedLeadingIconColor = Color(0xFF9E9E9E),
@@ -115,65 +96,89 @@ fun CoursesScreen() {
                 )
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Box( // Обертка для круглой кнопки фильтра
+            Box(
                 modifier = Modifier
-                    .size(48.dp) // Размер соответствует высоте TextField
+                    .size(48.dp)
                     .background(color = Color(0xFF2C2C2C), shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(onClick = { /* TODO: логика фильтрации */ }) {
                     Icon(
-                        painter =  painterResource(R.drawable.filter_alt_24dp_ffffff), // Иконка фильтра обновлена
+                        painter = painterResource(R.drawable.filter_alt_24dp_ffffff),
                         contentDescription = "Filter courses",
-                        tint = Color.White // Белая иконка,
-                        , modifier = Modifier.size(24.dp)
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
         }
 
-        Row( // Родительская Row для выравнивания
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp), // Отступы от краев экрана и снизу
-            horizontalArrangement = Arrangement.End // Выравниваем кнопку по правому краю
+                .padding(start = 16.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.End
         ) {
-            Row( // Сама кнопка сортировки
+            Row(
                 modifier = Modifier
                     .background(color = Color(0x002C2C2C), shape = RoundedCornerShape(8.dp))
-                    .clickable { /* TODO: Добавить логику смены сортировки или открытия меню сортировки */ }
-                    .padding(horizontal = 12.dp, vertical = 6.dp), // Внутренние отступы для текста и иконки
+                    .clickable { viewModel.sortCoursesByPublishDate() } // Сортировка по дате
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "По дате добавления",
-                    color = Color.Green, // Можно будет поменять на Color.White для лучшего контраста, если нужно
+                    color = Color.Green,
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     painter = painterResource(R.drawable.swap_vert_24dp_ffffff),
                     contentDescription = "Изменить сортировку",
-                    tint = Color.Green, // Аналогично тексту
+                    tint = Color.Green,
                     modifier = Modifier.size(18.dp)
-
                 )
             }
         }
 
-        // 📚 Список курсов
-        LazyColumn(
-            modifier = Modifier.weight(1f) // Даем LazyColumn весь доступный вес
-        ) {
-            items(sampleCourses) { course ->
-                CourseCard(course)
+        // 📚 Список курсов или состояния загрузки/ошибки
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            when (val state = coursesState) {
+                is CoursesUiState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                is CoursesUiState.Success -> {
+                    if (state.courses.isEmpty()) {
+                        Text(
+                            text = "Нет доступных курсов",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(state.courses, key = { course -> course.id }) { course ->
+                                CourseCard(course = course, viewModel = viewModel)
+                            }
+                        }
+                    }
+                }
+                is CoursesUiState.Error -> {
+                    Text(
+                        text = "Ошибка: ${state.message}",
+                        color = Color.Red,
+                        fontSize = 18.sp,
+                        modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                    )
+                }
             }
         }
 
+
         // ⬇️ Навигация снизу
-        Divider(color = Color.DarkGray, thickness = 1.dp) // Верхняя серая полоска
+        Divider(color = Color.DarkGray, thickness = 1.dp)
         NavigationBar(
-            containerColor = Color(0xFF2C2C2C), // Темно-серый фон бара
+            containerColor = Color(0xFF2C2C2C),
         ) {
             NavigationBarItem(
                 selected = selectedItemIndex == 0,
@@ -185,13 +190,17 @@ fun CoursesScreen() {
                     unselectedIconColor = Color.LightGray,
                     selectedTextColor = Color(0xFF388E3C),
                     unselectedTextColor = Color.LightGray,
-                    indicatorColor = Color.Transparent // Убираем фон индикатора
+                    indicatorColor = Color.Transparent
                 )
             )
             NavigationBarItem(
                 selected = selectedItemIndex == 1,
-                onClick = { selectedItemIndex = 1 },
-                icon = { Icon(painterResource( R.drawable.bookmark_24dp_ffffff), contentDescription = "Избранное", modifier = Modifier.size(24.dp))  },
+                onClick =
+                    { selectedItemIndex = 1
+
+                        navigator.push(FavoritesScreen)
+                          },
+                icon = { Icon(painterResource(R.drawable.bookmark_24dp_ffffff), contentDescription = "Избранное", modifier = Modifier.size(24.dp)) },
                 label = { Text("Избранное") },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color(0xFF388E3C),
@@ -219,97 +228,92 @@ fun CoursesScreen() {
 }
 
 @Composable
-fun CourseCard(course: Course) {
+fun CourseCard(course: Course, viewModel: CoursesViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
-        shape = RoundedCornerShape(12.dp), // Общее закругление карточки
+            .padding(12.dp)
+            .clickable { /* TODO: Handle course click / navigation */ },
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C))
     ) {
         Column {
-            Box( // Контейнер для изображения и оверлеев
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
-                    .clip(RoundedCornerShape(12.dp)) // Закругление всех углов контейнера картинки
+                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)) // Закругление только верхних углов
             ) {
                 Image(
-                    painter = painterResource(R.drawable.card1), // Используем course.imageRes
-                    contentDescription = null,
+                    painter = painterResource(id = R.drawable.card1), // Используем course.imageRes или другой плейсхолдер
+                    contentDescription = course.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
 
-                // Кнопка "Избранное" в правом верхнем углу
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(6.dp) // Уменьшенный отступ от краев картинки
+                        .padding(10.dp)
                         .background(
                             color = Color.Black.copy(alpha = 0.5f),
-                            shape = RoundedCornerShape(12.dp) // Немного увеличим закругление фона кнопки
+                            shape = RoundedCornerShape(24.dp)
                         )
-                        .padding(2.dp) // Уменьшенный внутренний отступ для иконки
+                        .padding(2.dp)
                 ) {
                     IconButton(
-                        onClick = { /* TODO: Handle favorite click */ },
-                        modifier = Modifier.size(20.dp) // Явно уменьшим размер IconButton
+                        onClick = { viewModel.toggleFavorite(course.id) }, // Переключение избранного
+                        modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
-                            painter = painterResource( R.drawable.bookmark_24dp_ffffff), // Используем drawable для карточки
+                            painter = painterResource(R.drawable.bookmark_24dp_ffffff),
                             contentDescription = "Add to favorites",
-                            tint = Color.White,
-                            modifier = Modifier.fillMaxSize() // Иконка заполняет IconButton
+                            tint = if (course.hasLike) Color(0xFF388E3C) else Color.White, // Зеленый если в избранном
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
 
-                // Оверлей с рейтингом и датой в левом нижнем углу
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Фон для звезд и рейтинга
                     Row(
                         modifier = Modifier
                             .background(
                                 color = Color.Black.copy(alpha = 0.5f),
-                                shape = RoundedCornerShape(16.dp) // Увеличенное закругление
+                                shape = RoundedCornerShape(16.dp)
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp), // Немного адаптируем паддинг
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color.Green,
-                            modifier = Modifier.size(14.dp) // Немного уменьшим звезду
+                            painter = painterResource(id = android.R.drawable.star_on), // Material icon for star
+                            contentDescription = "Rating",
+                            tint = Color.Green, // Используем более яркий зеленый для звезды
+                            modifier = Modifier.size(14.dp)
                         )
                         Text(
-                            text = "${course.rating}",
+                            text = "${course.rating}", // Используем course.rating
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(start = 4.dp)
                         )
                     }
-
                     Spacer(modifier = Modifier.width(8.dp))
-
-                    // Фон для даты
                     Box(
                         modifier = Modifier
                             .background(
                                 color = Color.Black.copy(alpha = 0.5f),
-                                shape = RoundedCornerShape(16.dp) // Увеличенное закругление
+                                shape = RoundedCornerShape(16.dp)
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp) // Немного адаптируем паддинг
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = course.date,
+                            text = course.publishDate, // Отображаем publishDate или startDate по вашему выбору
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -325,7 +329,7 @@ fun CourseCard(course: Course) {
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
             )
             Text(
-                text = course.description,
+                text = course.description, // Используем course.description
                 color = Color.LightGray,
                 fontSize = 14.sp,
                 maxLines = 2,
@@ -344,38 +348,18 @@ fun CourseCard(course: Course) {
                     "Подробнее ➜",
                     color = Color(0xFF388E3C),
                     fontWeight = FontWeight.Medium,
-                    modifier = androidx . compose . ui . Modifier.clickable { /* TODO: Handle details click */ }
+                    modifier = Modifier.clickable { /* TODO: Handle details click */ }
                 )
             }
         }
     }
 }
 
-
-data class Course(
-    val title: String,
-    val description: String,
-    val price: String,
-    val rating: Double,
-    val date: String,
-    val imageRes: Int
-)
-
-val sampleCourses = listOf(
-    Course(
-        "Java-разработчик с нуля",
-        "Освойте backend-разработку и программирование на Java...",
-        "999",
-        4.9,
-        "22 Мая 2024",
-        android.R.drawable.ic_menu_gallery // Placeholder, замените на ваши ресурсы
-    ),
-    Course(
-        "3D-дженералист",
-        "Освой профессию 3D-дженералиста и стань универсальным специалистом...",
-        "12000",
-        3.9,
-        "10 Сентября 2024",
-        android.R.drawable.ic_menu_gallery // Placeholder, замените на ваши ресурсы
-    )
-)
+// Убедитесь, что эти drawable ресурсы существуют в вашем проекте:
+// R.drawable.search_24dp_ffffff
+// R.drawable.filter_alt_24dp_ffffff
+// R.drawable.swap_vert_24dp_ffffff
+// R.drawable.bookmark_24dp_ffffff (для навигации)
+// R.drawable.card1 (плейсхолдер для изображения курса)
+// android.R.drawable.star_on (стандартная иконка звезды)
+// Icons.Filled.Favorite и Icons.Outlined.FavoriteBorder (из material-icons-extended)
