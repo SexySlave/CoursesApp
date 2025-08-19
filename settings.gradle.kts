@@ -21,7 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "CoursesApp"
 include(":app")
-include(":core")
 include(":data")
 include(":domain")
-include(":features:login")

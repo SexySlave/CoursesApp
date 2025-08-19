@@ -41,7 +41,6 @@ dependencies {
     implementation(libs.material)
 
     implementation(project(":domain"))
-    implementation(project(":core"))
 
     // DI
     implementation("io.insert-koin:koin-core:4.1.0")

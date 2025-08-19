@@ -41,10 +41,8 @@ android {
 
 dependencies {
 
-    implementation(project(":core"))
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":features:login"))
 
     // DI
     implementation("io.insert-koin:koin-core:4.1.0")
