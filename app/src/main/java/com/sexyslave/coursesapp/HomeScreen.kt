@@ -32,13 +32,12 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.sexyslave.coursesapp.features.courses.CoursesUiState
 import com.sexyslave.coursesapp.features.courses.CoursesViewModel
-import com.sexyslave.domain.model.Course // Correct import for your domain model
+import com.sexyslave.domain.model.Course
 import org.koin.androidx.compose.koinViewModel
 
 object HomeScreen : Screen {
     @Composable
     override fun Content() {
-        // ViewModel будет получен внутри CoursesScreen
         CoursesScreen()
     }
 }
@@ -48,7 +47,7 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
     var selectedItemIndex by remember { mutableStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }
     val coursesState by viewModel.coursesState.collectAsState()
-    val navigator = LocalNavigator.currentOrThrow // Получаем навигатор
+    val navigator = LocalNavigator.currentOrThrow
 
     Column(
         modifier = Modifier
@@ -57,7 +56,6 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
     ) {
         Spacer(modifier = Modifier.height(10.dp))
 
-        // 🔎 SearchBar + Filter
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,26 +120,25 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
             Row(
                 modifier = Modifier
                     .background(color = Color(0x002C2C2C), shape = RoundedCornerShape(8.dp))
-                    .clickable { viewModel.sortCoursesByPublishDate() } // Сортировка по дате
+                    .clickable { viewModel.sortCoursesByPublishDate() }
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "По дате добавления",
-                    color = Color.Green,
+                    color = Color(0xFF12B956),
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     painter = painterResource(R.drawable.swap_vert_24dp_ffffff),
                     contentDescription = "Изменить сортировку",
-                    tint = Color.Green,
+                    tint = Color(0xFF12B956),
                     modifier = Modifier.size(18.dp)
                 )
             }
         }
 
-        // 📚 Список курсов или состояния загрузки/ошибки
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when (val state = coursesState) {
                 is CoursesUiState.Loading -> {
@@ -174,8 +171,6 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
             }
         }
 
-
-        // ⬇️ Навигация снизу
         Divider(color = Color.DarkGray, thickness = 1.dp)
         NavigationBar(
             containerColor = Color(0xFF2C2C2C),
@@ -186,9 +181,9 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "Главная") },
                 label = { Text("Главная") },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF388E3C),
+                    selectedIconColor = Color(0xFF12B956),
                     unselectedIconColor = Color.LightGray,
-                    selectedTextColor = Color(0xFF388E3C),
+                    selectedTextColor = Color(0xFF12B956),
                     unselectedTextColor = Color.LightGray,
                     indicatorColor = Color.Transparent
                 )
@@ -197,15 +192,14 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
                 selected = selectedItemIndex == 1,
                 onClick =
                     { selectedItemIndex = 1
-
                         navigator.push(FavoritesScreen)
                           },
                 icon = { Icon(painterResource(R.drawable.bookmark_24dp_ffffff), contentDescription = "Избранное", modifier = Modifier.size(24.dp)) },
                 label = { Text("Избранное") },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF388E3C),
+                    selectedIconColor = Color(0xFF12B956),
                     unselectedIconColor = Color.LightGray,
-                    selectedTextColor = Color(0xFF388E3C),
+                    selectedTextColor = Color(0xFF12B956),
                     unselectedTextColor = Color.LightGray,
                     indicatorColor = Color.Transparent
                 )
@@ -216,9 +210,9 @@ fun CoursesScreen(viewModel: CoursesViewModel = koinViewModel()) {
                 icon = { Icon(Icons.Outlined.Person, contentDescription = "Аккаунт") },
                 label = { Text("Аккаунт") },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF388E3C),
+                    selectedIconColor = Color(0xFF12B956),
                     unselectedIconColor = Color.LightGray,
-                    selectedTextColor = Color(0xFF388E3C),
+                    selectedTextColor = Color(0xFF12B956),
                     unselectedTextColor = Color.LightGray,
                     indicatorColor = Color.Transparent
                 )
@@ -242,13 +236,13 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(160.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)) // Закругление только верхних углов
+                    .clip(RoundedCornerShape(12.dp))
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.card1), // Используем course.imageRes или другой плейсхолдер
                     contentDescription = course.title,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 Box(
@@ -262,13 +256,13 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                         .padding(2.dp)
                 ) {
                     IconButton(
-                        onClick = { viewModel.toggleFavorite(course.id) }, // Переключение избранного
+                        onClick = { viewModel.toggleFavorite(course.id) },
                         modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.bookmark_24dp_ffffff),
+                            painter = painterResource(if (course.hasLike) R.drawable.bookmark_24dp_1f1f1f else R.drawable.bookmark_24dp_ffffff),
                             contentDescription = "Add to favorites",
-                            tint = if (course.hasLike) Color(0xFF388E3C) else Color.White, // Зеленый если в избранном
+                            tint = if (course.hasLike) Color(0xFF12B956) else Color.White,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -290,13 +284,13 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(id = android.R.drawable.star_on), // Material icon for star
+                            painter = painterResource(id = android.R.drawable.star_on),
                             contentDescription = "Rating",
-                            tint = Color.Green, // Используем более яркий зеленый для звезды
+                            tint = Color(0xFF12B956),
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
-                            text = "${course.rating}", // Используем course.rating
+                            text = "${course.rating}",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp,
@@ -313,7 +307,33 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = course.publishDate, // Отображаем publishDate или startDate по вашему выбору
+                            text = run {
+                                val parts = course.startDate.split("-")
+                                val year = parts.getOrNull(0) ?: ""
+                                val monthNumber = parts.getOrNull(1)?.toIntOrNull()
+                                val day = parts.getOrNull(2)?.let { if (it.length == 2 && it.startsWith("0")) it.substring(1) else it } ?: ""
+
+                                val monthName = when (monthNumber) {
+                                    1 -> "января"
+                                    2 -> "февраля"
+                                    3 -> "марта"
+                                    4 -> "апреля"
+                                    5 -> "мая"
+                                    6 -> "июня"
+                                    7 -> "июля"
+                                    8 -> "августа"
+                                    9 -> "сентября"
+                                    10 -> "октября"
+                                    11 -> "ноября"
+                                    12 -> "декабря"
+                                    else -> ""
+                                }
+                                if (day.isNotEmpty() && monthName.isNotEmpty() && year.isNotEmpty()) {
+                                    "$day $monthName $year"
+                                } else {
+                                    course.publishDate // Fallback to original if parsing fails
+                                }
+                            },
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -329,7 +349,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
             )
             Text(
-                text = course.description, // Используем course.description
+                text = course.description,
                 color = Color.LightGray,
                 fontSize = 14.sp,
                 maxLines = 2,
@@ -346,7 +366,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                 Text("${course.price} ₽", color = Color.White, fontWeight = FontWeight.Bold)
                 Text(
                     "Подробнее ➜",
-                    color = Color(0xFF388E3C),
+                    color = Color(0xFF12B956),
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable { /* TODO: Handle details click */ }
                 )
@@ -354,12 +374,3 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
         }
     }
 }
-
-// Убедитесь, что эти drawable ресурсы существуют в вашем проекте:
-// R.drawable.search_24dp_ffffff
-// R.drawable.filter_alt_24dp_ffffff
-// R.drawable.swap_vert_24dp_ffffff
-// R.drawable.bookmark_24dp_ffffff (для навигации)
-// R.drawable.card1 (плейсхолдер для изображения курса)
-// android.R.drawable.star_on (стандартная иконка звезды)
-// Icons.Filled.Favorite и Icons.Outlined.FavoriteBorder (из material-icons-extended)

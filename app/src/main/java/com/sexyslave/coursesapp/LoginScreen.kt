@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,16 +84,18 @@ fun LoginFields(
                 .fillMaxWidth()
                 .height(68.dp)
                 .padding(vertical = 6.dp),
+            textStyle = TextStyle(color = Color.White), // Явно задаем цвет текста
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF2C2C2C),
                 unfocusedContainerColor = Color(0xFF2C2C2C),
-                focusedBorderColor = if (email.isNotEmpty() && !isEmailValid) Color.Red else Color.Green, // Динамический цвет бордера
-                unfocusedBorderColor = if (email.isNotEmpty() && !isEmailValid) Color.Red else Color.Gray, // Динамический цвет бордера
-                cursorColor = Color.Green,
+                focusedBorderColor = Color.Transparent, // Убрана обводка
+                unfocusedBorderColor = Color.Transparent, // Убрана обводка
+                cursorColor = Color(0xFF12B956),
                 focusedPlaceholderColor = Color(0xFFAAAAAA),
-                unfocusedPlaceholderColor = Color(0xFFAAAAAA)
+                unfocusedPlaceholderColor = Color(0xFFAAAAAA),
+                errorBorderColor = Color.Red // Цвет обводки при ошибке
             ),
             isError = email.isNotEmpty() && !isEmailValid // Показываем ошибку, если email не пустой и невалидный
         )
@@ -123,14 +126,15 @@ fun LoginFields(
                 .fillMaxWidth()
                 .height(68.dp)
                 .padding(vertical = 6.dp),
+            textStyle = TextStyle(color = Color.White), // Явно задаем цвет текста
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = Color(0xFF2C2C2C),
                 unfocusedContainerColor = Color(0xFF2C2C2C),
-                focusedBorderColor = Color.Green,
-                unfocusedBorderColor = Color.Gray,
-                cursorColor = Color.Green,
+                focusedBorderColor = Color.Transparent, // Убрана обводка
+                unfocusedBorderColor = Color.Transparent, // Убрана обводка
+                cursorColor = Color(0xFF12B956),
                 focusedPlaceholderColor = Color(0xFFAAAAAA),
                 unfocusedPlaceholderColor = Color(0xFFAAAAAA)
             ),
@@ -194,7 +198,7 @@ object LoginScreen : Screen {
                     .align(Alignment.Start),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00C853),
+                    containerColor = Color(0xFF12B956), // Обновленный зеленый цвет для кнопки входа
                     disabledContainerColor = Color.Gray // Цвет неактивной кнопки
                 )
             ) {
@@ -215,14 +219,14 @@ object LoginScreen : Screen {
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = "Регистрация",
-                    color = Color.Gray, // Цвет изменен на Gray для неактивности
+                    color = Color(0xFF12B956), // Сделал текст зеленым
                     // modifier = Modifier.clickable { onRegisterClick() } // Удален clickable
                 )
             }
 
             Text(
                 text = "Забыл пароль",
-                color = Color.Gray, // Цвет изменен на Gray для неактивности
+                color = Color(0xFF12B956), // Сделал текст зеленым
                 modifier = Modifier
                     .padding(top = 8.dp)
                     // .clickable { onForgotPasswordClick() } // Удален clickable

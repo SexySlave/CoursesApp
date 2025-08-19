@@ -103,15 +103,22 @@ fun FavoritesScreenContent(viewModel: CoursesViewModel = koinViewModel()) { // R
         ) {
             NavigationBarItem(
                 selected = selectedItemIndex == 0,
-                onClick = { selectedItemIndex = 0
-                    navigator.replaceAll(HomeScreen)
+                onClick = {
+                    selectedItemIndex = 0
+                    // Check if HomeScreen is already in the stack and not the current screen
+                    val homeScreenInStack = navigator.items.any { it is HomeScreen && it != navigator.lastItem }
+                    if (navigator.canPop && homeScreenInStack) {
+                        navigator.popUntil { it is HomeScreen }
+                    } else {
+                        navigator.push(HomeScreen)
+                    }
                           },
                 icon = { Icon(Icons.Outlined.Home, contentDescription = "Главная") },
                 label = { Text("Главная") },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF388E3C),
+                    selectedIconColor = Color(0xFF12B956),
                     unselectedIconColor = Color.LightGray,
-                    selectedTextColor = Color(0xFF388E3C),
+                    selectedTextColor = Color(0xFF12B956),
                     unselectedTextColor = Color.LightGray,
                     indicatorColor = Color.Transparent
                 )
@@ -122,9 +129,9 @@ fun FavoritesScreenContent(viewModel: CoursesViewModel = koinViewModel()) { // R
                 icon = { Icon(painterResource(R.drawable.bookmark_24dp_ffffff), contentDescription = "Избранное", modifier = Modifier.size(24.dp)) },
                 label = { Text("Избранное") },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF388E3C),
+                    selectedIconColor = Color(0xFF12B956),
                     unselectedIconColor = Color.LightGray,
-                    selectedTextColor = Color(0xFF388E3C),
+                    selectedTextColor = Color(0xFF12B956),
                     unselectedTextColor = Color.LightGray,
                     indicatorColor = Color.Transparent
                 )
@@ -135,9 +142,9 @@ fun FavoritesScreenContent(viewModel: CoursesViewModel = koinViewModel()) { // R
                 icon = { Icon(Icons.Outlined.Person, contentDescription = "Аккаунт") },
                 label = { Text("Аккаунт") },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF388E3C),
+                    selectedIconColor = Color(0xFF12B956),
                     unselectedIconColor = Color.LightGray,
-                    selectedTextColor = Color(0xFF388E3C),
+                    selectedTextColor = Color(0xFF12B956),
                     unselectedTextColor = Color.LightGray,
                     indicatorColor = Color.Transparent
                 )
@@ -161,3 +168,4 @@ fun FavoritesScreenContent(viewModel: CoursesViewModel = koinViewModel()) { // R
 // R.drawable.bookmark_24dp_ffffff (для навигации)
 // android.R.drawable.star_on (стандартная иконка звезды)
 // Icons.Filled.Favorite и Icons.Outlined.FavoriteBorder (из material-icons-extended)
+
