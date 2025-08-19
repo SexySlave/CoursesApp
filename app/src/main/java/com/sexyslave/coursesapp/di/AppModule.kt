@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
     // ViewModel
-    viewModel { CoursesViewModel(get()) } // Добавили GetCoursesUseCase и UpdateFavoriteStatusUseCase
+    viewModel { CoursesViewModel(get(), get()) } // Добавили GetCoursesUseCase и UpdateFavoriteStatusUseCase
 }
 
 val domainModule = module {

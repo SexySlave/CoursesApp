@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sexyslave.domain.model.Course
 import com.sexyslave.domain.usecase.GetCoursesUseCase
+import com.sexyslave.domain.usecase.UpdateFavoriteStatusUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class CoursesViewModel(private val getCoursesUseCase: GetCoursesUseCase) : ViewModel() {
+class CoursesViewModel(
+    private val getCoursesUseCase: GetCoursesUseCase,
+    private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase // Добавлено
+) : ViewModel() {
 
     private val _coursesState = MutableStateFlow<CoursesUiState>(CoursesUiState.Loading)
     val coursesState: StateFlow<CoursesUiState> = _coursesState.asStateFlow()
@@ -38,14 +42,22 @@ class CoursesViewModel(private val getCoursesUseCase: GetCoursesUseCase) : ViewM
         viewModelScope.launch {
             if (_coursesState.value is CoursesUiState.Success) {
                 val currentCourses = (_coursesState.value as CoursesUiState.Success).courses
-                val updatedCourses = currentCourses.map { course ->
-                    if (course.id == courseId) {
-                        course.copy(hasLike = !course.hasLike)
-                    } else {
-                        course
+                val courseToUpdate = currentCourses.find { it.id == courseId }
+                courseToUpdate?.let {
+                    val newFavoriteState = !it.hasLike
+                    updateFavoriteStatusUseCase(it.id, newFavoriteState) // Обновляем в БД
+                    // Обновляем состояние UI после успешного обновления в БД (опционально, зависит от того, как обновляется UI)
+                    // Вместо этого можно просто заново загрузить курсы fetchCourses()
+                    // или обновить локальный список, как было до этого:
+                    val updatedCourses = currentCourses.map { course ->
+                        if (course.id == courseId) {
+                            course.copy(hasLike = newFavoriteState)
+                        } else {
+                            course
+                        }
                     }
+                    _coursesState.value = CoursesUiState.Success(updatedCourses)
                 }
-                _coursesState.value = CoursesUiState.Success(updatedCourses)
             }
         }
     }
