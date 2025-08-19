@@ -238,7 +238,7 @@ fun CourseCard(course: Course, viewModel: CoursesViewModel) {
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.card1), 
+                    painter =  painterResource(if (course.id.toInt() % 3 == 0) R.drawable.card1  else if (course.id.toInt() % 3 == 1) R.drawable.card2 else R.drawable.card3),
                     contentDescription = course.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
